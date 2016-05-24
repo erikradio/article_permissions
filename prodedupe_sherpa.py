@@ -52,7 +52,7 @@ def main():
         "KUSW_URL", "Rights_to_Share", "Conditions",
         "SourceFile", "DuplicateHandle", "DuplicateDOI",
         "Crossref_author","Crossref_title","Crossref_journal",
-        "Crossref_author","Crossref_issn"
+        "Crossref_author","Crossref_issn", "DuplicateTitle"
         ]
 
     # Get our original data structure
@@ -73,81 +73,82 @@ def main():
         # increment our counter
         i += 1
         # print the counter
-        # print("{}/{}".format(str(i), str(m)))
+        print("{}/{}".format(str(i), str(m)))
 
         issn = row['Crossref_issn']
 
         if len(issn) > 0:
 
             req = requests.get(sherpa_url+'?issn='+issn+'&ak='+key)
+            if req.status_code == requests.codes.ok:
 
-            root = ET.fromstring(req.text)
+                root = ET.fromstring(req.text)
 
-            #get number of hits
-            for value in root.findall('header'):
-                numhits=value.find('numhits')
-                hits=numhits.text
-                row['NumberOfHits'] = hits
-            #get prearchiving archiving permissions
-            for value in root.findall('publishers/publisher'):
-                pa=value.find('preprints/prearchiving')
-                if pa is None:pass
-                else:
-                    paText=pa.text
-                    row['Prearchiving_permissions'] = paText
-
-            #get prearchiving archiving restrictions
-            for value in root.findall('publishers/publisher'):
-                pr=value.find('preprints/prerestrictions')
-                if pr is None:pass
-                else:
-                    prText=pr.text
-                    row['Prearchiving_restrictions'] = prText
-
-
-            #get postprints archiving permissions
-            for value in root.findall('publishers/publisher'):
-                poa=value.find('preprints/postarchiving')
-                if poa is None:pass
-                else:
-                    poaText=poa.text
-                    row['Postarchiving_permissions'] = poaText
-
-            #get postprints archiving restrictions
-            for value in root.findall('publishers/publisher'):
-                por=value.find('postprints/prerestrictions')
-                if por is None:pass
-                else:
-                    porText=por.text
-                    row['Postarchiving_restrictions'] = porText
-
-            # get PDF archiving permissions
-            for value in root.findall('publishers/publisher'):
-                pdfA=value.find('pdfversion/pdfarchiving')
-                if pdfA is None:pass
-                else:
-                    pdfAText=pdfA.text
-                    row['PDFarchiving_permissions'] = pdfAText
-
-            #get PDF archiving restrictions
-            for value in root.findall('publishers/publisher'):
-                pdfR=value.find('pdfversion/pdfrestrictions')
-                if pdfR is None:pass
-                else:
-                    pdfRText=pdfR.text
-                    row['PDFarchiving_restrictions'] = pdfRText
-
-            #get publisher conditions
-            conditions=[]
-            for value in root.findall('publishers/publisher/conditions'):
-                cond=value.findall('condition')
-                # print(cond)
-                for x in cond:
-                    if x is None:pass
+                #get number of hits
+                for value in root.findall('header'):
+                    numhits=value.find('numhits')
+                    hits=numhits.text
+                    row['NumberOfHits'] = hits
+                #get prearchiving archiving permissions
+                for value in root.findall('publishers/publisher'):
+                    pa=value.find('preprints/prearchiving')
+                    if pa is None:pass
                     else:
-                        conditions.append(x.text)
-                        # condText=blah.join(';')
-                row['Publisher_conditions'] = "||".join(conditions)
+                        paText=pa.text
+                        row['Prearchiving_permissions'] = paText
+
+                #get prearchiving archiving restrictions
+                for value in root.findall('publishers/publisher'):
+                    pr=value.find('preprints/prerestrictions')
+                    if pr is None:pass
+                    else:
+                        prText=pr.text
+                        row['Prearchiving_restrictions'] = prText
+
+
+                #get postprints archiving permissions
+                for value in root.findall('publishers/publisher'):
+                    poa=value.find('preprints/postarchiving')
+                    if poa is None:pass
+                    else:
+                        poaText=poa.text
+                        row['Postarchiving_permissions'] = poaText
+
+                #get postprints archiving restrictions
+                for value in root.findall('publishers/publisher'):
+                    por=value.find('postprints/prerestrictions')
+                    if por is None:pass
+                    else:
+                        porText=por.text
+                        row['Postarchiving_restrictions'] = porText
+
+                # get PDF archiving permissions
+                for value in root.findall('publishers/publisher'):
+                    pdfA=value.find('pdfversion/pdfarchiving')
+                    if pdfA is None:pass
+                    else:
+                        pdfAText=pdfA.text
+                        row['PDFarchiving_permissions'] = pdfAText
+
+                #get PDF archiving restrictions
+                for value in root.findall('publishers/publisher'):
+                    pdfR=value.find('pdfversion/pdfrestrictions')
+                    if pdfR is None:pass
+                    else:
+                        pdfRText=pdfR.text
+                        row['PDFarchiving_restrictions'] = pdfRText
+
+                #get publisher conditions
+                conditions=[]
+                for value in root.findall('publishers/publisher/conditions'):
+                    cond=value.findall('condition')
+                    # print(cond)
+                    for x in cond:
+                        if x is None:pass
+                        else:
+                            conditions.append(x.text)
+                            # condText=blah.join(';')
+                    row['Publisher_conditions'] = "||".join(conditions)
 
 
 
