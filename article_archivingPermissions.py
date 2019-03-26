@@ -112,7 +112,7 @@ def main():
 
     write_list_of_dicts_to_file(outfile_path, output_rows, fields_in_output)
 
-    print("\nFinished Processing!\n\tHave a SUPER day!")
+    
 
 if __name__ == '__main__':
     main()
